@@ -1,1 +1,26 @@
-
+---
+  - name: Install apache server and deploy html file
+    hosts: webservers
+    remote_user: devops
+    become: yes
+    gather_facts: yes
+    tasks:
+      - name: Installing httpd server
+        yum:
+          name: httpd
+          state: latest
+      - name: Starting httpd server
+        service:
+          name: httpd
+          state: started
+          enabled: yes
+      - name: Deploying html file
+        copy:
+          src: /home/devops/index.html
+          dest: /var/www/html
+        notify: Restarting httpd server
+    handlers:
+      - name: Restarting httpd server
+        service:
+          name: httpd
+          state: restarted
